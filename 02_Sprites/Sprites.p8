@@ -9,7 +9,6 @@ end
 _draw=function()
 cls()
 for i=0,4 do
-local z=1
 spr(flr(t+i)%2,i*8+44.,60.)
 end
 end
