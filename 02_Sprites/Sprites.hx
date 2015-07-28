@@ -4,7 +4,6 @@ class Sprites {
 	static inline var num = 5;
 	static inline function main() {
 		// clear the screen:
-		cls();
 		var t:Fixed = 0;
 		onUpdate = function() {
 			t += 0.1;

@@ -1,8 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
--- 2015-07-28 23:52:47
-cls()
+-- 2015-07-28 23:54:10
 local t = 0
 _update = function()
 	t += 0.1
