@@ -1,0 +1,5 @@
+-js Hello.p8hx
+-main Hello
+-lib hxpico8
+--macro p8gen.PgMain.use()
+-dce full
