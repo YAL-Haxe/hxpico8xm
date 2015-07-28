@@ -1,16 +1,17 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
+-- 2015-07-28 23:52:47
 cls()
-local t=0
-_update=function()
-t+=0.1
+local t = 0
+_update = function()
+	t += 0.1
 end
-_draw=function()
-cls()
-for i=0,4 do
-spr(flr(t+i)%2,i*8+44.,60.)
-end
+_draw = function()
+	cls()
+	for i = 0, 4 do
+		spr(flr(t + i) % 2, i * 8 + 44., 60.)
+	end
 end
 __gfx__
 00000000007070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
