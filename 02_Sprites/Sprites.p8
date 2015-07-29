@@ -1,7 +1,6 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
--- 2015-07-28 23:54:10
 local t = 0
 _update = function()
 	t += 0.1
@@ -9,7 +8,7 @@ end
 _draw = function()
 	cls()
 	for i = 0, 4 do
-		spr(flr(t + i) % 2, i * 8 + 44., 60.)
+		spr(flr(t + i) % 2, i * 8 + 44, 60)
 	end
 end
 __gfx__
