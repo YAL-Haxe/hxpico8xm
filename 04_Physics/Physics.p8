@@ -78,11 +78,12 @@ function Player_create()
 		x = 64
 	}
 end
-local player = Player_create()
-_update = function()
+--
+player = Player_create()
+function _update()
 	Player_update(player)
 end
-_draw = function()
+function _draw()
 	cls()
 	rectfill(0, 0, 127, 127, 1)
 	line(1, 68, 126, 68, 7)

@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
--- 2015-07-28 23:52:59
+--
 cls()
 print("hello.hx:8: hello!")
 print("hello!")

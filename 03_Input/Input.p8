@@ -1,19 +1,20 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
-local player_x = 60
-local player_y = 60
-local player_flip = true
-local player_frame = 0
-_update = function()
-	local dx = 0
+--
+player_x = 60
+player_y = 60
+player_flip = true
+player_frame = 0
+function _update()
+	dx = 0
 	if btn(0) then
 		dx -= 1
 	end
 	if btn(1) then
 		dx += 1
 	end
-	local dy = 0
+	dy = 0
 	if btn(2) then
 		dy -= 1
 	end
@@ -31,7 +32,7 @@ _update = function()
 		player_frame = 0
 	end
 end
-_draw = function()
+function _draw()
 	cls()
 	spr(flr(player_frame), player_x, player_y, 1, 1, player_flip)
 end

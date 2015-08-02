@@ -1,21 +1,21 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
--- main:
-function main_pointfree(x, y)
+-- Main:
+function Main_pointFree(x, y)
 	return not fget(mget(x / 8, y / 8), 0)
 end
--- player:
-function player_canmoveto(this, nx, ny)
-	return main_pointfree(nx - 2.5, ny - 3.5) and main_pointfree(nx + 2.5, ny - 3.5) and main_pointfree(nx - 2.5, ny + 3.5) and main_pointfree(nx + 2.5, ny + 3.5)
+-- Player:
+function Player_canMoveTo(this, nx, ny)
+	return Main_pointFree(nx - 2.5, ny - 3.5) and Main_pointFree(nx + 2.5, ny - 3.5) and Main_pointFree(nx - 2.5, ny + 3.5) and Main_pointFree(nx + 2.5, ny + 3.5)
 end
-function player_isonground(this)
-	return not player_canmoveto(this, this.x, this.y + 1)
+function Player_isOnGround(this)
+	return not Player_canMoveTo(this, this.x, this.y + 1)
 end
-function player_move(this, dx, dy)
+function Player_move(this, dx, dy)
 	local nx = this.x + dx
 	local ny = this.y + dy
-	if player_canmoveto(this, nx, ny) then
+	if Player_canMoveTo(this, nx, ny) then
 		this.x = nx
 		this.y = ny
 		return true
@@ -23,8 +23,8 @@ function player_move(this, dx, dy)
 		return false
 	end
 end
-function player_update(this)
-	if player_isonground(this) then
+function Player_update(this)
+	if Player_isOnGround(this) then
 		if btnp(4) then
 			this.vspeed = -3
 		end
@@ -41,14 +41,14 @@ function player_update(this)
 	if dx != 0 then
 		this.flip = dx > 0
 		for i = 0, 1 do
-			if not player_move(this, dx, 0) then
+			if not Player_move(this, dx, 0) then
 				dx = 0
 			end
 		end
 	end
 	local vspeed = this.vspeed
 	local frame = this.frame
-	if not player_isonground(this) then
+	if not Player_isOnGround(this) then
 		frame = 4
 	elseif frame >= 5 then
 		frame += 0.1
@@ -61,7 +61,7 @@ function player_update(this)
 		frame = 0
 	end
 	for i1 = 1, abs(vspeed) do
-		if not player_move(this, 0, sgn(vspeed)) then
+		if not Player_move(this, 0, sgn(vspeed)) then
 			if vspeed < 0 then
 				frame = 6
 			else
@@ -73,7 +73,7 @@ function player_update(this)
 	end
 	this.frame = frame
 end
-function player_create()
+function Player_create()
 	return {
 		vspeed = 0,
 		frame = 0,
@@ -82,11 +82,12 @@ function player_create()
 		x = 64
 	}
 end
-local player = player_create()
-_update = function()
-	player_update(player)
+--
+player = Player_create()
+function _update()
+	Player_update(player)
 end
-_draw = function()
+function _draw()
 	cls()
 	rectfill(0, 0, 127, 127, 1)
 	map(0, 0, 0, 0, 16, 16)

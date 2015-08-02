@@ -1,11 +1,12 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
-local t = 0
-_update = function()
+--
+t = 0
+function _update()
 	t += 0.1
 end
-_draw = function()
+function _draw()
 	cls()
 	for i = 0, 4 do
 		spr(flr(t + i) % 2, i * 8 + 44, 60)
