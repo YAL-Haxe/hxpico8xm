@@ -7,14 +7,14 @@ player_y = 60
 player_flip = true
 player_frame = 0
 function _update()
-	dx = 0
+	local dx = 0
 	if btn(0) then
 		dx -= 1
 	end
 	if btn(1) then
 		dx += 1
 	end
-	dy = 0
+	local dy = 0
 	if btn(2) then
 		dy -= 1
 	end
