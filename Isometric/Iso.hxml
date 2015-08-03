@@ -1,0 +1,5 @@
+-js iso.p8hx
+-main Game
+-lib hxpico8
+--macro p8gen.PgMain.use()
+-dce full
