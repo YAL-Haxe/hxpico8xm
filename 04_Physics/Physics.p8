@@ -2,30 +2,28 @@ pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
 -- Player:
-function Player_canMoveTo(this, nx, ny)
+function Player_canMoveTo(nx, ny)
 	return nx >= 4 and nx <= 124 and ny <= 64
 end
-function Player_isOnGround(this)
-	return not Player_canMoveTo(this, this.x, this.y + 1)
+function Player_isOnGround()
+	return not Player_canMoveTo(Player_x, Player_y + 1)
 end
-function Player_move(this, dx, dy)
-	local nx = this.x + dx
-	local ny = this.y + dy
-	if Player_canMoveTo(this, nx, ny) then
-		this.x = nx
-		this.y = ny
+function Player_move(dx, dy)
+	if Player_canMoveTo(Player_x + dx, Player_y + dy) then
+		Player_x += dx
+		Player_y += dy
 		return true
 	else
 		return false
 	end
 end
-function Player_update(this)
-	if Player_isOnGround(this) then
+function Player_update()
+	if Player_isOnGround() then
 		if btnp(4) then
-			this.vspeed = -3
+			Player_vspeed = -3
 		end
 	else
-		this.vspeed += 0.333
+		Player_vspeed += 0.333
 	end
 	local dx = 0
 	if btn(0) then
@@ -35,59 +33,52 @@ function Player_update(this)
 		dx += 1
 	end
 	if dx != 0 then
-		this.flip = dx > 0
+		Player_flip = dx > 0
 		for i = 0, 1 do
-			if not Player_move(this, dx, 0) then
+			if not Player_move(dx, 0) then
 				dx = 0
 			end
 		end
 	end
-	local vspeed = this.vspeed
-	local frame = this.frame
-	if not Player_isOnGround(this) then
-		frame = 4
-	elseif frame >= 5 then
-		frame += 0.1
-		if frame % 1 >= 0.2 then
-			frame = 0
+	if not Player_isOnGround() then
+		Player_frame = 4
+	elseif Player_frame >= 5 then
+		Player_frame += 0.1
+		if Player_frame % 1 >= 0.2 then
+			Player_frame = 0
 		end
 	elseif dx != 0 then
-		frame = (frame + 0.2) % 4
+		Player_frame = (Player_frame + 0.2) % 4
 	else
-		frame = 0
+		Player_frame = 0
 	end
-	for i1 = 1, abs(vspeed) do
-		if not Player_move(this, 0, sgn(vspeed)) then
-			if vspeed < 0 then
-				frame = 6
+	for i1 = 1, abs(Player_vspeed) do
+		if not Player_move(0, sgn(Player_vspeed)) then
+			if Player_vspeed < 0 then
+				Player_frame = 6
 			else
-				frame = 5
+				Player_frame = 5
 			end
-			this.vspeed = 0
+			Player_vspeed = 0
 			break
 		end
 	end
-	this.frame = frame
 end
-function Player_create()
-	return {
-		vspeed = 0,
-		frame = 0,
-		flip = true,
-		y = 64,
-		x = 64
-	}
-end
+-- Player:
+Player_x = 64
+Player_y = 64
+Player_flip = true
+Player_frame = 0
+Player_vspeed = 0
 --
-player = Player_create()
 function _update()
-	Player_update(player)
+	Player_update()
 end
 function _draw()
 	cls()
 	rectfill(0, 0, 127, 127, 1)
 	line(1, 68, 126, 68, 7)
-	spr(player.frame, player.x - 4, player.y - 4, 1, 1, player.flip)
+	spr(Player_frame, Player_x - 4, Player_y - 4, 1, 1, Player_flip)
 end
 __gfx__
 00000000007070000000000000707000000000000000000000707000000000000000000000000000000000000000000000000000000000000000000000000000

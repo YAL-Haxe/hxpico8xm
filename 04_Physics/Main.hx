@@ -3,10 +3,9 @@ import Pico.*;
 class Main {
 	static inline function main() {
 		// There's now a bit more to the player behavior, so it've been made
-		// into a class. Check it out:
-		var player = new Player();
+		// into a class (Player)
 		onUpdate = function() {
-			player.update();
+			Player.update();
 		};
 		onDraw = function() {
 			cls();
@@ -15,7 +14,7 @@ class Main {
 			// draw a "ground" line:
 			line(1, 68, 126, 68, clWhite);
 			// draw the player:
-			player.draw();
+			Player.draw();
 		}
 	}
 }

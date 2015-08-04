@@ -2,23 +2,22 @@ package;
 import Pico.*;
 import Main.pointFree;
 /**
- * Player class. If you woul 
+ * Player class. Since there's only one player instance, it's more reasonable
+ * to keep it's fields static.
  * @author YellowAfterlife
  */
 @:publicFields
 class Player {
-	var x:Fixed = 64;
-	var y:Fixed = 64;
-	var flip:Bool = true;
-	var frame:Fixed = 0;
+	static var x:Fixed = 64;
+	static var y:Fixed = 64;
+	static var flip:Bool = true;
+	static var frame:Fixed = 0;
 	/// vertical speed (pixels per step)
-	var vspeed:Fixed = 0;
-	function new() {
-		
-	}
+	static var vspeed:Fixed = 0;
 	
 	/// Returns whether the player can move to the given new coordinates.
-	function canMoveTo(nx:Fixed, ny:Fixed) {
+	static function canMoveTo(nx:Fixed, ny:Fixed) {
+		// check if all 4 corners of player's hitbox are free
 		var sizeX = 2.5;
 		var sizeY = 3.5;
 		return pointFree(nx - sizeX, ny - sizeY)
@@ -28,22 +27,20 @@ class Player {
 	}
 	
 	/// Returns whether the player is standing on ground.
-	function isOnGround() {
+	static function isOnGround() {
 		return !canMoveTo(x, y + 1);
 	}
 	
 	/// Tries to move the player by the given offset. Returns if successful.
-	function move(dx:Fixed, dy:Fixed) {
-		var nx = x + dx;
-		var ny = y + dy;
-		if (canMoveTo(nx, ny)) {
-			x = nx;
-			y = ny;
+	static function move(dx:Fixed, dy:Fixed) {
+		if (canMoveTo(x + dx, y + dy)) {
+			x += dx;
+			y += dy;
 			return true;
 		} else return false;
 	}
 	
-	function update() {
+	static function update() {
 		// handle jumping:
 		if (isOnGround()) {
 			if (btnp(btA)) vspeed = -3;
@@ -64,9 +61,6 @@ class Player {
 		}
 		
 		// decide on the next animation frame:
-		// (copying instance variable to local variables saves some tokens)
-		var vspeed = this.vspeed;
-		var frame = this.frame;
 		if (!isOnGround()) {
 			// jumping/falling
 			frame = 4;
@@ -86,16 +80,13 @@ class Player {
 				// override with landing/ceiling hit frame:
 				frame = vspeed < 0 ? 6 : 5;
 				// reset vertical speed:
-				this.vspeed = 0;
+				vspeed = 0;
 				break;
 			}
 		}
-		
-		// finally, assign the animation frame back to the instance:
-		this.frame = frame;
 	}
 	
-	inline function draw() {
+	static inline function draw() {
 		// nothing new, except some centering
 		spr(frame, x - 4, y - 4, 1, 1, flip);
 	}
