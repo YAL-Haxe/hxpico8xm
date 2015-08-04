@@ -1,176 +1,195 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
-function Entity_moveTo(this,nx,ny)
-local xmap=World_emap[ny]
-if xmap==nil then
-xmap={}
-World_emap[ny]=xmap
-elseif xmap[nx]!=nil then
-return false
+-- Entity:
+function Entity_moveTo(this, nx, ny)
+	local xmap = World_emap[ny]
+	if xmap == nil then
+		xmap = { }
+		World_emap[ny] = xmap
+	elseif xmap[nx] != nil then
+		return false
+	end
+	if this.y != nil then
+		World_emap[this.y][this.x] = nil
+	end
+	xmap[nx] = this
+	this.x = nx
+	this.y = ny
+	return true
 end
-if this.y!=nil then
-World_emap[this.y][this.x]=nil
-end
-xmap[nx]=this
-this.x=nx
-this.y=ny
-return true
-end
-function Entity_draw(this,dx,dy)end
-function Entity_interact(this)end
+function Entity_draw(this, dx, dy) end
+function Entity_interact(this) end
+-- Game:
 function Game_draw()
-cls()
-rectfill(0,0,127,127,1)
-line(5,63,63,34,7)
-line(64,34,122,63,7)
-for y=-3,3 do
-for x=-3,3 do
-local wx=Game_player.x+x
-local wy=Game_player.y+y
-local t=World_tget(wx,wy)
-if t==0 then
-t=64
+	cls()
+	rectfill(0, 0, 127, 127, 1)
+	line(5, 63, 63, 34, 7)
+	line(64, 34, 122, 63, 7)
+	for y = -3, 3 do
+		for x = -3, 3 do
+			local wx = Game_player.x + x
+			local wy = Game_player.y + y
+			local t = World_tget(wx, wy)
+			if t == 0 then
+				t = 64
+			end
+			local z = World_zget(wx, wy)
+			local dx = 56 + (x - y) * 8
+			local dy = 61 + (x + y) * 4 - z
+			spr(t, dx, dy, 2, 1 + z / 8)
+			local e = World_eget(wx, wy)
+			if e != nil then
+				e:draw(dx + 8, dy + 4)
+			end
+		end
+	end
+	for k = 0, 2, 2 do
+		line(5, 64 + k, 64, 93 + k, 1)
+		line(63, 93 + k, 122, 64 + k, 1)
+	end
+	line(3, 64, 64, 94, 7)
+	line(63, 94, 124, 64, 7)
 end
-local z=World_zget(wx,wy)
-local dx=56+(x-y)*8
-local dy=61+(x+y)*4-z
-spr(t,dx,dy,2,1+z/8)
-local e=World_eget(wx,wy)
-if e!=nil then
-e:draw(dx+8,dy+4)
+-- Sprite:
+function Sprite_draw(this, dx, dy)
+	spr(this.sprite, dx - 4, dy - 8, 1, 1, this.flip)
 end
-end
-end
-for k=0,2,2 do
-line(5,64+k,64,93+k,1)
-line(63,93+k,122,64+k,1)
-end
-line(3,64,64,94,7)
-line(63,94,124,64,7)
-end
-function Sprite_draw(this,dx,dy)
-spr(this.sprite,dx-4,dy-8,1,1,this.flip)
-end
-function Sprite_new(this,s)
-this.sprite=s
+function Sprite_new(this, s)
+	this.sprite = s
 end
 function Sprite_create(...)
-local this={draw=Sprite_draw,interact=Entity_interact}
-Sprite_new(...)
-return this
+	local this = {
+		draw = Sprite_draw,
+		interact = Entity_interact
+	}
+	Sprite_new(...)
+	return this
 end
+-- NPC:
 function NPC_interact(this)
-this.flip=this.x-this.y<Game_player.x-Game_player.y
-local s=this.text
-local h=7
-for i=1,#s do
-if String_lcharAt(s,i)=="\n" then
-h+=6
+	this.flip = this.x - this.y < Game_player.x - Game_player.y
+	local s = this.text
+	local h = 7
+	for i = 1, #s do
+		if String_lcharAt(s, i) == "\n" then
+			h += 6
+		end
+	end
+	Game_draw()
+	rectfill(0, 0, 127, h, 8)
+	local x = 2
+	local y = 1
+	for i1 = 1, #s do
+		local c = String_lcharAt(s, i1)
+		local t = 2
+		if c == "\n" then
+			y += 6
+			x = 2
+			t = 5
+		elseif c == "_" then
+			t = 5
+		else
+			if c == "," then
+				t = 5
+			elseif c == "." or c == "!" then
+				t = 7
+			end
+			print(c, x, y, 7)
+			x += 4
+		end
+		for _ = 1, t do
+			flip()
+		end
+	end
+	while not btnp(4) do
+		flip()
+	end
 end
+function NPC_create(sprite, text)
+	local this = {
+		interact = NPC_interact,
+		draw = Sprite_draw
+	}
+	Sprite_new(this, sprite)
+	this.text = text
+	return this
 end
-Game_draw()
-rectfill(0,0,127,h,8)
-local x=2
-local y=1
-for i1=1,#s do
-local c=String_lcharAt(s,i1)
-local t=2
-if c=="\n" then
-y+=6
-x=2
-t=5
-elseif c=="_" then
-t=5
-else
-if c=="," then
-t=5
-elseif c=="." or c=="!" then
-t=7
-end
-print(c,x,y,7)
-x+=4
-end
-for _=1,t do
-flip()
-end
-end
-while not btnp(4) do
-flip()
-end
-end
-function NPC_create(sprite,text)
-local this={interact=NPC_interact,draw=Sprite_draw}
-Sprite_new(this,sprite)
-this.text=text
-return this
-end
-function Player_moveRel(this,dx,dy)
-if this.moveTimer>0 then
-return false
-end
-local cx=this.x
-local cy=this.y
-local nx=cx+dx
-local ny=cy+dy
-if fget(World_tget(nx,ny),0) or World_zget(nx,ny)-World_zget(cx,cy)>2 then
-return false
-end
-this.flip=dx>0 or dy<0
-local e=World_eget(nx,ny)
-if e!=nil then
-e:interact()
-else
-Entity_moveTo(this,nx,ny)
-end
-this.moveTimer=6
-return true
+-- Player:
+function Player_moveRel(this, dx, dy)
+	if this.moveTimer > 0 then
+		return false
+	end
+	local cx = this.x
+	local cy = this.y
+	local nx = cx + dx
+	local ny = cy + dy
+	if fget(World_tget(nx, ny), 0) or World_zget(nx, ny) - World_zget(cx, cy) > 2 then
+		return false
+	end
+	this.flip = dx > 0 or dy < 0
+	local e = World_eget(nx, ny)
+	if e != nil then
+		e:interact()
+	else
+		Entity_moveTo(this, nx, ny)
+	end
+	this.moveTimer = 6
+	return true
 end
 function Player_create()
-local this={draw=Sprite_draw,interact=Entity_interact,moveTimer=0}
-Sprite_new(this,112)
-return this
+	local this = {
+		draw = Sprite_draw,
+		interact = Entity_interact,
+		moveTimer = 0
+	}
+	Sprite_new(this, 112)
+	return this
 end
-function String_lcharAt(this,i)
-return sub(this,i,i)
+-- String:
+function String_lcharAt(this, i)
+	return sub(this, i, i)
 end
-function World_eget(x,y)
-local xmap=World_emap[y]
-if xmap!=nil then
-return xmap[x]
-else
-return nil
+-- World:
+function World_eget(x, y)
+	local xmap = World_emap[y]
+	if xmap != nil then
+		return xmap[x]
+	else
+		return nil
+	end
 end
+function World_tget(x, y)
+	return mget(x * 2, y)
 end
-function World_tget(x,y)
-return mget(x*2,y)
+function World_zget(x, y)
+	return mget(x * 2 + 1, y)
 end
-function World_zget(x,y)
-return mget(x*2+1,y)
-end
-World_emap={}
-Game_player=Player_create()
-Entity_moveTo(Game_player,3,3)
-Entity_moveTo(NPC_create(112,"hey listen!\ndo you like _v_i_d_e_o_g_a_m_e_s_?"),5,4)
+-- World:
+World_emap = { }
+--
+Game_player = Player_create()
+Entity_moveTo(Game_player, 3, 3)
+Entity_moveTo(NPC_create(112, "hey listen!\ndo you like _v_i_d_e_o_g_a_m_e_s_?"), 5, 4)
 function _update()
-local _this=Game_player
-if _this.moveTimer>0 then
-_this.moveTimer-=1
+	local _this = Game_player
+	if _this.moveTimer > 0 then
+		_this.moveTimer -= 1
+	end
+	if btn(0) then
+		Player_moveRel(_this, -1, 0)
+	end
+	if btn(1) then
+		Player_moveRel(_this, 1, 0)
+	end
+	if btn(2) then
+		Player_moveRel(_this, 0, -1)
+	end
+	if btn(3) then
+		Player_moveRel(_this, 0, 1)
+	end
 end
-if btn(0) then
-Player_moveRel(_this,-1,0)
-end
-if btn(1) then
-Player_moveRel(_this,1,0)
-end
-if btn(2) then
-Player_moveRel(_this,0,-1)
-end
-if btn(3) then
-Player_moveRel(_this,0,1)
-end
-end
-_draw=Game_draw
+_draw = Game_draw
 __gfx__
 0000000000000dd000000dd000000dd000000d0d00000ddd00000ddd00000ddd00000ddd00000ddd00000ddd00000ddd00000ddd00000dd000000ddd00000ddd
 0000000000d000d000d0000d00d0000d00d00d0d00d00d0000d00d0000d0000d00d00d0d00d00d0d00d00d0d00d00d0d00d00d0000d00d0d00d00d0000d00d00
