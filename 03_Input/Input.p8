@@ -1,7 +1,6 @@
 pico-8 cartridge // http://www.pico-8.com
 version 4
 __lua__
---
 player_x = 60
 player_y = 60
 player_flip = true
@@ -34,7 +33,7 @@ function _update()
 end
 function _draw()
 	cls()
-	spr(flr(player_frame), player_x, player_y, 1, 1, player_flip)
+	spr(player_frame, player_x, player_y, 1, 1, player_flip)
 end
 __gfx__
 00000000007070000000000000707000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
