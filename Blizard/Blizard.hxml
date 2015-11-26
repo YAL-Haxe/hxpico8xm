@@ -1,0 +1,5 @@
+-js Blizard.p8hx
+-main Main
+-lib hxpico8
+--macro p8gen.PgMain.use()
+-dce full
